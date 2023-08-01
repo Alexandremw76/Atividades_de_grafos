@@ -23,10 +23,8 @@ class Grafo:
     def mostrar_num_verts(self):
         print("numero de vertice ",self.numero_de_vers)
 
-# Criando um objeto da classe Pessoa
 grafo1 = Grafo("grafo.txt")
 
-# Chamando o método dizer_ola()
 grafo1.mostrar_matriz_ad(0)
 grafo1.mostrar_lista_ad(0)
 grafo1.mostrar_num_verts()
