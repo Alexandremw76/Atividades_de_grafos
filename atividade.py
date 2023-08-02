@@ -184,7 +184,23 @@ class Grafo:
                 print("Não forma um ciclo.")
                 return False
         print("Forma um ciclo")
-
+    def ver_trilha(self,vertice_b):
+        lista_arestas_passados = []
+        for i in range(len(vertice_b)-1):
+            lista = []
+            lista.insert(i, vertice_b[i])
+            lista.insert(i, vertice_b[i+1])
+            lista.sort()
+            lista_arestas_passados.append(lista)
+        for i in range(len(lista_arestas_passados)-1):
+            if(lista_arestas_passados[i] == lista_arestas_passados[i+1]):
+                    print(lista_arestas_passados[i],lista_arestas_passados[i+1])
+                    print("nao forma uma trilha")
+                    return False
+        if(self.ver_caminho(vertice_b) == True):
+            print("forma um trilha")
+        else:
+            print("nao forma um trilha")
 grafo1 = Grafo("grafo.txt")
 
 #grafo1.mostrar_matriz_ad(0)
@@ -200,9 +216,10 @@ grafo1 = Grafo("grafo.txt")
 #grafo1.ver_vet_universal()
 #grafo1.ver_vet_isolado()
 vertices_B = [0, 2, 3]  # conjunto de vertices
-vertices_c = [0,2,1,0] # conjunto de vertices com ciclo
+vertices_c = [0,1,4] # conjunto de vertices com ciclo
 arestas_b = [(0, 2), (2, 3),(0,3)] # par de arestas
 #grafo1.ver_sub_grafo(vertices_B,arestas_b)
 #grafo1.ver_passeio(vertices_c)
 #grafo1.ver_caminho(vertices_c)
-grafo1.ver_ciclo(vertices_c)
+#grafo1.ver_ciclo(vertices_c)
+grafo1.ver_trilha(vertices_c)
