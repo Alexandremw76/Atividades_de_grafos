@@ -2,9 +2,11 @@ class Grafo:
     # metodo construtor que ira fazer lista de ad e matriz de ad
     def __init__(self, arquivo):
         with open(arquivo) as f:
-            self.numero_de_vers = [int(x)for x in next (f).split()]
+            numero_de_vers_ = [int(x)for x in next (f).split()]
+            self.numero_de_vers = numero_de_vers_[0]
             self.matriz_ad= []
             self.list_ad = []
+
             # fazer matriz de ad
             for line in f:
                 self.matriz_ad.append([int(x) for x in line.split()])
@@ -143,6 +145,7 @@ class Grafo:
 
         print("Forma um passeio.")
         return True
+    
     def ver_passeio(self, vertices_B):
         for i in range(len(vertices_B) - 1):
             vertice_atual = vertices_B[i]
@@ -153,6 +156,7 @@ class Grafo:
 
         print("Forma um passeio.")
         return True 
+   
     def ver_caminho(self, vertices_B):
         for i in range(len(vertices_B) - 1):
             vertice_atual = vertices_B[i]
@@ -184,6 +188,7 @@ class Grafo:
                 print("Não forma um ciclo.")
                 return False
         print("Forma um ciclo")
+    
     def ver_trilha(self,vertice_b):
         lista_arestas_passados = []
         for i in range(len(vertice_b)-1):
@@ -201,6 +206,59 @@ class Grafo:
             print("forma um trilha")
         else:
             print("nao forma um trilha")
+            
+    def ver_clique(self, vertices):
+        for i in vertices:
+            for j in vertices:
+                if i != j:
+                    if self.matriz_ad[i][j]!=1:
+                        print("nao é clique")
+                        return(False)
+        print("é clique")
+        return True
+    
+    def maximal_clique(self, vertices):
+        if not self.ver_clique(vertices):
+            return False
+    
+        for v in range(len(self.matriz_ad)):
+            if v not in vertices: # v vai iterar só os vertices que sao diferentes da entrada da funçao 
+                conectado_a_todos = True
+                for u in vertices: # u vai iterar sobre os vertices de entrada da funçao
+                    if self.matriz_ad[v][u] == 0: # se nao houver aresta entre v e u
+                        conectado_a_todos = False 
+                        break                     # pular para o proximo v
+                if conectado_a_todos: # se o for acima terminar e nao entrar no if acima existe um vertice v possui conexao com todos os vertices u
+                    print("nao é clique max")
+                    return False
+        print("é clique max")
+        return True
+class Grafo_Complemento(Grafo):
+    def __init__(self,matriz_ad_grafo,num_ver):
+        self.numero_de_vers = num_ver
+        self.matriz_ad = matriz_ad_grafo
+        for i in range(len(self.matriz_ad)):
+            for j in range ((len(self.matriz_ad[0]))):
+                if self.matriz_ad[i][j] == 0:
+                    self.matriz_ad[i][j] = 1
+                else:
+                    self.matriz_ad[i][j] = 0
+        self.list_ad = []
+        for i in range(len(self.matriz_ad)):
+            list_temp = [] 
+            for j in range(len(self.matriz_ad)):
+                if self.matriz_ad[i][j] == 1:
+                    list_temp.append(j)
+            self.list_ad.append(list_temp) 
+    def ver_con_independente(self, vertices):
+        for i in vertices:
+            for j in vertices:
+                if i != j:
+                    if self.matriz_ad[i][j]==1:
+                        print("é independente")
+                        return(False)
+        print("NAO é independente")
+        return True 
 grafo1 = Grafo("grafo.txt")
 
 #grafo1.mostrar_matriz_ad(0)
@@ -215,11 +273,18 @@ grafo1 = Grafo("grafo.txt")
 #grafo1.ver_completude()
 #grafo1.ver_vet_universal()
 #grafo1.ver_vet_isolado()
-vertices_B = [0, 2, 3]  # conjunto de vertices
-vertices_c = [0,1,4] # conjunto de vertices com ciclo
+vertices_B = [0, 1]  # conjunto de vertices
+vertices_c = [3,6] # conjunto de vertices com ciclo
 arestas_b = [(0, 2), (2, 3),(0,3)] # par de arestas
 #grafo1.ver_sub_grafo(vertices_B,arestas_b)
 #grafo1.ver_passeio(vertices_c)
 #grafo1.ver_caminho(vertices_c)
 #grafo1.ver_ciclo(vertices_c)
-grafo1.ver_trilha(vertices_c)
+#grafo1.ver_trilha(vertices_c)
+#grafo1.ver_clique(vertices_c)
+#grafo1.maximal_clique(vertices_c)
+grafo_complemento = Grafo_Complemento(grafo1.matriz_ad,grafo1.numero_de_vers)
+#print(grafo1.list_ad)
+print(grafo_complemento.list_ad)
+print(grafo1.calcular_graus_graf())
+grafo_complemento.ver_con_independente(vertices_c)
