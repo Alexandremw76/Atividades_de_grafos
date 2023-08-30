@@ -1,238 +1,291 @@
 class Grafo:
-    # metodo construtor que ira fazer lista de ad e matriz de ad
+    # Método construtor que irá criar a matriz de adjacência e a lista de adjacência do grafo.
     def __init__(self, arquivo):
+        # Abrir o arquivo especificado para leitura.
         with open(arquivo) as f:
-            numero_de_vers_ = [int(x)for x in next (f).split()]
+            # Ler a primeira linha do arquivo e extrair o número de vértices do grafo.
+            numero_de_vers_ = [int(x) for x in next(f).split()]
             self.numero_de_vers = numero_de_vers_[0]
-            self.matriz_ad= []
+            
+            # Inicializar as estruturas de dados para a matriz de adjacência e a lista de adjacência.
+            self.matriz_ad = []
             self.list_ad = []
 
-            # fazer matriz de ad
+            # Preencher a matriz de adjacência lendo as linhas restantes do arquivo.
             for line in f:
+                # Dividir a linha em números inteiros e adicioná-los à matriz de adjacência.
                 self.matriz_ad.append([int(x) for x in line.split()])
-            # fazer lista de ad apartir da matriz de ad
+
+        # Construir a lista de adjacência a partir da matriz de adjacência.
         for i in range(len(self.matriz_ad)):
-            list_temp = [] 
+            list_temp = []
             for j in range(len(self.matriz_ad)):
+                # Se houver uma aresta entre os vértices i e j, adicionar j à lista de adjacência de i.
                 if self.matriz_ad[i][j] == 1:
                     list_temp.append(j)
-            self.list_ad.append(list_temp)    
+            # Adicionar a lista de adjacência temporária à lista de adjacência global.
+            self.list_ad.append(list_temp)
 
-    # metodos para teste             
-    def mostrar_matriz_ad(self,num):
-        print("matriz de ad do vertice:",num)
-        print(self.matriz_ad[num])
-    def mostrar_lista_ad(self,num):
-        print("vizinhaça  do grafo:",num)
-        print(self.list_ad[num])
-    def mostrar_num_verts(self):
-        print("numero de vertice ",self.numero_de_vers)
-    ##########################################################
-   
     # calcular graus apartir da lista de ad    
-    def calcular_graus_graf(self):
+    def calcular_graus_graf(self):# calcular graus apartir da lista de ad  
         max = 0
         min = len(self.list_ad[0])
         for i in range(len(self.list_ad)):
             if len(self.list_ad[i]) > max:
                 max = len(self.list_ad[i])
-            if len(self.list_ad[i]) < max:
+            if len(self.list_ad[i]) < min:
                 min = len(self.list_ad[i])
         print("grau maximo = ",max)
         print("grau minimo = ",min)
    
     #sequencia de graus do grafo
     def seque_vertice(self):
+        # Inicializar uma lista para armazenar a sequência de graus dos vértices.
         seq_lista = []
-        for i in range(len(self.list_ad)):
-            seq_lista.append(len(self.list_ad[i]))  
         
+        # Iterar sobre a lista de adjacência para calcular o grau de cada vértice.
+        for i in range(len(self.list_ad)):
+            # O grau de um vértice é o número de vizinhos na lista de adjacência.
+            grau = len(self.list_ad[i])
+            seq_lista.append(grau)  # Adicionar o grau à lista de sequência de graus.
+        
+        # Ordenar a lista de sequência de graus em ordem crescente.
         seq_lista.sort()
-        print("sequencia de graus do grafo",seq_lista)
+        
+        # Imprimir a sequência de graus do grafo.
+        print("Sequência de graus do grafo:", seq_lista)
+        
+        # Retornar a lista de sequência de graus.
         return seq_lista
     
 
     #funçao para mostrar grau e vizinhança de um vertice
-    def grau_vizi_de_vertice(self,num):
-        grau = len(self.list_ad[num])
-        print("grau do vertice {0} é = {1}".format(num,grau))
-        print("vizinhaça aberta do grafo",num)
-        print(self.list_ad[num])
-        print("vizinhaça fechada do grafo",num)
+    def grau_vizi_de_vertice(self, vertice):
+        # Calcular o grau do vértice contando o número de vizinhos na lista de adjacência.
+        grau = len(self.list_ad[vertice])
+        
+        # Imprimir o grau do vértice.
+        print("Grau do vértice {0} é = {1}".format(vertice, grau))
+        
+        # Imprimir a vizinhança aberta do vértice.
+        print("Vizinhança aberta do vértice", vertice)
+        print(self.list_ad[vertice])
+        
+        # Criar a vizinhança fechada do vértice, que inclui o próprio vértice e seus vizinhos.
         viz_fechada = []
-        viz_fechada.append(num)
-        viz_fechada.append(self.list_ad[num])
+        viz_fechada.append(vertice)  # Adicionar o próprio vértice.
+        viz_fechada.extend(self.list_ad[vertice])  # Adicionar os vizinhos à lista.
+        
+        # Imprimir a vizinhança fechada do vértice.
+        print("Vizinhança fechada do vértice", vertice)
         print(viz_fechada)
-
 
     #funçao para verificar adjacencia entre vertices
     def ver_adjacencia(self,v,u):
-        list = self.list_ad[v]
-        print(list)
-        if list.count(u) == True:
+
+        if self.matriz_ad[v][u] == 1:
             print("vertices sao adjacentes")
         else:
             print("vertices nao sao adjacentes") 
 
-
-    def ver_regularidade(self): # comparar se todos os graus da lista de sequencias de graus de vertices é igual
+    def ver_regularidade(self):
+        # Obter a lista de sequência de graus dos vértices.
         lista = self.seque_vertice()
-        for i in range(len(lista) - 1): 
-            if(lista[i] != lista[i + 1]): 
-                print("grafo nao é regular")
+        
+        # Iterar sobre a lista de sequência de graus para verificar a regularidade.
+        for i in range(len(lista) - 1):
+            # Comparar o grau atual com o próximo grau na lista.
+            if lista[i] != lista[i + 1]:
+                print("O grafo não é regular.")
                 return False
-        print("grafo é regular, e possui regularidade de {0}".format(lista[i])) 
-        return True # caso chegue ao final da lista, retornamos True.
+        
+        # Se todos os graus forem iguais, o grafo é regular.
+        print("O grafo é regular e possui regularidade de {0}".format(lista[i]))
+        return True  # Se chegar ao final da lista, retornar True.
     
-    # conta todas as aresta do grafo [pula uma linha da matriz a cada iteraçao]
     def contar_arestas(self):
-        num_aresta = 0
-        n = len(self.matriz_ad)
-
-        for i in range(n):
-            for j in range(i + 1, n):
-                num_aresta += self.matriz_ad[i][j] #i + 1 para evitar contar as arestas duas vezes. [pula uma linha da matriz a cada iteraçao]
-
-        return  num_aresta
+        num_aresta = 0  # Inicializa o contador de arestas.
+        # Itera por todas as combinações de vértices (i, j) onde i < j.
+        for i in range(len(self.matriz_ad)):
+            for j in range(len(self.matriz_ad)):
+                num_aresta += self.matriz_ad[i][j]  # Soma o valor da aresta (i, j).
+        return num_aresta//2 # divide por dois para nao haver arestas duplicadas
     
     # conta todos os vertices e compara com n = n*(n-1)/2 se for igual o grafo e completo
+    
     def ver_completude(self):
-        n = self.numero_de_vers[0]
-        n_aresta=self.contar_arestas()
-        n = n*(n-1)/2
-        if n_aresta == n:
-            print("grafo é completo")
-        else:
-            print("grafo nao é completo")
+        n = self.numero_de_vers  #número de vértices no grafo.
+        n_aresta = self.contar_arestas()  # número de arestas no grafo.
 
-    def ver_vet_universal(self): # retorna a lista com todos os vertices universais (compara a tamanho da lista de ad de todos os vertice com tolta de vertices -1)
-        n = self.numero_de_vers[0]-1
-        lista_ver_uni = []
+        # Calcula o número máximo de arestas em um grafo completo com n vértices.
+        max_aresta = n * (n - 1) // 2
+
+        # Verifica se o número de arestas no grafo é igual ao máximo possível.
+        if n_aresta == max_aresta:
+            print("O grafo é completo.")
+        else:
+            print("O grafo não é completo pois possui {0} arestas e para ser completo deveria possuir {1} arestas ".format(n_aresta,max_aresta))
+
+    def ver_vet_universal(self): #Um vértice v é universal quando está conectado por arestas a todos os demais vértices
+        n = self.numero_de_vers - 1  #n = numeros de vertices -1(pq o vertice nao pode estar ligado a ele proprio)
+        lista_ver_uni = []  # Inicializa a lista para armazenar os vértices universais.
+
+        # Itera por todos os vértices para verificar se são universais.
         for i in range(len(self.list_ad)):
             if len(self.list_ad[i]) == n:
-                lista_ver_uni.append(i)
-        print("vertices universais",lista_ver_uni)
+                lista_ver_uni.append(i)  # Adiciona o vértice à lista se for universal.
+
+        print("Vértices universais:", lista_ver_uni)
         return lista_ver_uni
     
-    def ver_vet_isolado(self): # retorna a lista com todos os vertices isolados (compara a tamanho da lista de ad de todos os vertice com 0)
-        lista_ver_isolados = []
+    def ver_vet_isolado(self): # um vertice é dito isolado se nao possuir vizinho ou seja sua lista de adjacencia tem tamanho = 0
+        lista_ver_isolados = []  # Inicializa a lista para armazenar os vértices isolados.
+
+        # Itera por a lista de adjacencia de todo os vértices para verificar se são isolados.
         for i in range(len(self.list_ad)):
-            if len(self.list_ad[i]) == 0:
-                lista_ver_isolados.append(i)
-        print("vertices isolados",lista_ver_isolados)
+            if len(self.list_ad[i]) == 0: # compara se o tamanho da lista é 0, (vazia)
+                lista_ver_isolados.append(i)  # Adiciona o vértice à lista se for isolado.
+
+        print("Vértices isolados:", lista_ver_isolados)
         return lista_ver_isolados
 
-    def ver_sub_grafo(self, vertices_B,arestas_b):
-        for i in range(len(vertices_B)):
-            n = vertices_B[i]
-            if(n >= len(self.matriz_ad)):
-                #print("Vertice nao pertence a o grafo")
+    def ver_sub_grafo(self, vertices_B, arestas_b): # Um subgrafo em um grafo é um subconjunto dos vértices e arestas do grafo original que pode forma um novo grafo caso exista no grafo.
+        # Verifica se os vértices B pertencem ao grafo.
+        for n in vertices_B: # n vai iterar sober a lista de vertice_b
+            if n >= len(self.matriz_ad):
+                print("O vértice {0} não pertence ao grafo.".format(n))
                 return 0
-        for i in range(len(arestas_b)):
-            i ,j = arestas_b[i]
-            if(self.matriz_ad[i][j] == 0):
-                print("aresta nao existe") 
+        
+        # Verifica se as arestas b existem no grafo.
+        for i, j in arestas_b:
+            if self.matriz_ad[i][j] == 0:
+                print("A aresta ({0}, {1}) não existe no grafo.".format(i, j))
             else:
-                print("forma um sub-grafo") 
+                print("Forma um sub-grafo.")
 
     def ver_passeio(self, vertices_B):
+
+        #Um passeio é uma sequência de vértices onde cada vértice consecutivo na sequência
+        #é conectado por uma aresta no grafo, permitindo percorrer de um vértice para o próximo
+        #seguindo as arestas.
+
+        # Verifica se existe uma aresta entre vértices consecutivos na lista.
         for i in range(len(vertices_B) - 1):
             vertice_atual = vertices_B[i]
             vertice_prox = vertices_B[i + 1]
+            
+            # Verifica se há uma aresta entre os vértices atuais e próximos.
             if self.matriz_ad[vertice_atual][vertice_prox] == 0:
                 print("Não forma um passeio.")
                 return False
 
         print("Forma um passeio.")
         return True
-    
-    def ver_passeio(self, vertices_B):
-        for i in range(len(vertices_B) - 1):
-            vertice_atual = vertices_B[i]
-            vertice_prox = vertices_B[i + 1]
-            if self.matriz_ad[vertice_atual][vertice_prox] == 0:
-                print("Não forma um passeio.")
-                return False
-
-        print("Forma um passeio.")
-        return True 
    
     def ver_caminho(self, vertices_B):
+        #um caminho é um passeio onde nao se repete vertices ou seja é uma sequencia de vertices destintos
         for i in range(len(vertices_B) - 1):
             vertice_atual = vertices_B[i]
             vertice_prox = vertices_B[i + 1]
+            
+            # Verifica se o vértice atual aparece mais de uma vez na sequência.
             if vertices_B.count(vertice_atual) > 1:
-                print("Não forma um caminho, existem vertices repetidos.")
+                print("Não forma um caminho, existem vértices repetidos.")
                 return False
+            
+            # Verifica se existe uma aresta entre vértices consecutivos na sequência.
             if self.matriz_ad[vertice_atual][vertice_prox] == 0:
                 print("Não forma um caminho.")
                 return False
+            
         print("Forma um caminho.")
-        return True 
+        return True
     
-    def ver_ciclo(self,vertices_B):
-        começo = vertices_B[0]
+    def ver_ciclo(self, vertices_B): 
+        # um ciclo é uma sequência de vértices e arestas que começa e termina no mesmo vértice, 
+        #percorrendo um caminho através das arestas de forma que não repita nenhum vértice
+        inicio = vertices_B[0]
         fim = vertices_B[-1]
-        if(começo != fim ):
-            print("começo diferente do fim")
+        
+        # Verifica se o começo é diferente do fim, condição para ser um ciclo.
+        if inicio != fim:
+            print("O começo é diferente do fim. Não forma um ciclo.")
             return False
-        começo = 1# segundo
-        fim = len(vertices_B)-1# penultimo
-        for i in range(começo,fim): # verifica se existe repetiçao no vertices apos o inico 
-           if vertices_B.count(vertices_B[i]) > 1: 
-                print("existem vertices repetidos")
+        
+        inicio = 1  # Segundo vértice.
+        fim = len(vertices_B) - 1  # Penúltimo vértice.
+        
+        # Verifica se há vértices repetidos entre o intervalo
+        for i in range(inicio, fim):
+            if vertices_B.count(vertices_B[i]) > 1:
+                print("Existem vértices repetidos na sequência.")
+        
+        # Verifica se há arestas entre vértices consecutivos na sequência.
         for i in range(len(vertices_B) - 1):
             vertice_atual = vertices_B[i]
             vertice_prox = vertices_B[i + 1]
             if self.matriz_ad[vertice_atual][vertice_prox] == 0:
                 print("Não forma um ciclo.")
                 return False
-        print("Forma um ciclo")
+        print("Forma um ciclo.")
+        return True
     
-    def ver_trilha(self,vertice_b):
-        lista_arestas_passados = []
-        for i in range(len(vertice_b)-1):
-            lista = []
-            lista.insert(i, vertice_b[i])
-            lista.insert(i, vertice_b[i+1])
-            lista.sort()
-            lista_arestas_passados.append(lista)
-        for i in range(len(lista_arestas_passados)-1):
-            if(lista_arestas_passados[i] == lista_arestas_passados[i+1]):
-                    print(lista_arestas_passados[i],lista_arestas_passados[i+1])
-                    print("nao forma uma trilha")
-                    return False
-        if(self.ver_caminho(vertice_b) == True):
-            print("forma um trilha")
-        else:
-            print("nao forma um trilha")
+    def ver_trilha(self, vertice_b):
+        #uma trilha é um caminho onde nao se repete arestas
+        lista_arestas_visitadas = []
+
+        # Cria uma lista de pares de vértices consecutivos para formar as arestas
+        for i in range(len(vertice_b) - 1):
+            aresta = (vertice_b[i], vertice_b[i + 1]) # forma um par de vertices que representam as arestas
+            lista_arestas_visitadas.append(sorted(aresta)) # ordenar aresta pra garantir que ex : (0,1) e (1,0) sejam iguais pois representam a mesma arestas
             
-    def ver_clique(self, vertices):
+        # Verifica a repetição de arestas na sequência.
+        for i in range(len(lista_arestas_visitadas) - 1):
+            if lista_arestas_visitadas[i] == lista_arestas_visitadas[i + 1]:
+                print("Não forma uma trilha.")
+                return False
+        # Verifica se a sequência forma um caminho.
+        if self.ver_caminho(vertice_b) == True:
+            print("Forma uma trilha.")
+        else:
+            print("Não forma uma trilha.")
+            
+    def ver_clique(self, vertices): # um clique é um subconjunto de vértices de um grafo no qual todos os vértices estão conectados entre si por arestas
+        # Itera sobre todos os pares de vértices no conjunto.
         for i in vertices:
             for j in vertices:
-                if i != j:
-                    if self.matriz_ad[i][j]!=1:
-                        print("nao é clique")
-                        return(False)
-        print("é clique")
+                if i != j:  # comparamos vért diferentes.
+                    # Verifica se a aresta entre os vértices i e j está ausente.
+                    if self.matriz_ad[i][j] != 1:
+                        print("Não é um clique, a aresta ({0}, {1}) está ausente.".format(i, j))
+                        return False
+
+        print("É um clique, todas as arestas entre os vértices estão presentes.")
         return True
     
-    def maximal_clique(self, vertices):
+    def maximal_clique(self, vertices): # é clique que nao pode ser estendido
+        # Verifica se o conjunto de vértices passado é um clique.
         if not self.ver_clique(vertices):
             return False
-    
+        
+        # Itera sobre todos os vértices que não estão no conjunto de entrada.
         for v in range(len(self.matriz_ad)):
-            if v not in vertices: # v vai iterar só os vertices que sao diferentes da entrada da funçao 
+            if v not in vertices: # verifica se um vertice v que nao esta presente no clique original esta conectado a todos o vertice que fazem parte do clique
                 conectado_a_todos = True
-                for u in vertices: # u vai iterar sobre os vertices de entrada da funçao
-                    if self.matriz_ad[v][u] == 0: # se nao houver aresta entre v e u
-                        conectado_a_todos = False 
-                        break                     # pular para o proximo v
-                if conectado_a_todos: # se o for acima terminar e nao entrar no if acima existe um vertice v possui conexao com todos os vertices u
-                    print("nao é clique max")
+                
+                # Verifica se o vértice v está conectado a todos os vértices no clique.
+                for u in vertices:
+                    if self.matriz_ad[v][u] == 0:
+                        conectado_a_todos = False
+                        break  # Se não houver aresta entre v e u, pula para o próximo v.
+                    
+                if conectado_a_todos: # se houver um vertice v ligado a todos os vertices u o clique nao é maximal pois pode ser extendido com o vertcice v
+                    print("Não é um clique maximal.")
                     return False
-        print("é clique max")
+        
+        print("É um clique maximal.")
         return True
+
 class Grafo_Complemento(Grafo):
     def __init__(self,matriz_ad_grafo,num_ver):
         self.numero_de_vers = num_ver
@@ -250,41 +303,14 @@ class Grafo_Complemento(Grafo):
                 if self.matriz_ad[i][j] == 1:
                     list_temp.append(j)
             self.list_ad.append(list_temp) 
-    def ver_con_independente(self, vertices):
+    def ver_con_independente(self, vertices): # usa mesma funçao do clique
         for i in vertices:
             for j in vertices:
                 if i != j:
-                    if self.matriz_ad[i][j]==1:
-                        print("é independente")
+                    if self.matriz_ad[i][j]!=1:
+                        print("NAO é independente")
                         return(False)
-        print("NAO é independente")
+        print("é independente")
         return True 
-grafo1 = Grafo("grafo.txt")
 
-#grafo1.mostrar_matriz_ad(0)
-#grafo1.mostrar_lista_ad(4)
-#grafo1.mostrar_num_verts()
-#grafo1.calcular_graus_graf()
-#grafo1.seque_vertice()
-#grafo1.grau_vizi_de_vertice(0)
-#grafo1.ver_adjacencia(4,2)
-#grafo1.ver_regularidade()
-#grafo1.contar_arestas()
-#grafo1.ver_completude()
-#grafo1.ver_vet_universal()
-#grafo1.ver_vet_isolado()
-vertices_B = [0, 1]  # conjunto de vertices
-vertices_c = [3,6] # conjunto de vertices com ciclo
-arestas_b = [(0, 2), (2, 3),(0,3)] # par de arestas
-#grafo1.ver_sub_grafo(vertices_B,arestas_b)
-#grafo1.ver_passeio(vertices_c)
-#grafo1.ver_caminho(vertices_c)
-#grafo1.ver_ciclo(vertices_c)
-#grafo1.ver_trilha(vertices_c)
-#grafo1.ver_clique(vertices_c)
-#grafo1.maximal_clique(vertices_c)
-grafo_complemento = Grafo_Complemento(grafo1.matriz_ad,grafo1.numero_de_vers)
-#print(grafo1.list_ad)
-print(grafo_complemento.list_ad)
-print(grafo1.calcular_graus_graf())
-grafo_complemento.ver_con_independente(vertices_c)
+
